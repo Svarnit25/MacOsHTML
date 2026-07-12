@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>macOS Monterey Ultra Pro - TINYTACTIX Engine v4</title>
+    <title>macOS Monterey Ultra Pro - TINYTACTIX Engine v9.0</title>
     <style>
         :root {
             --bg-blur: blur(30px);
-            --window-bg: rgba(24, 24, 28, 0.82);
+            --window-bg: rgba(24, 24, 28, 0.85);
             --sidebar-bg: rgba(255, 255, 255, 0.05);
-            --menu-bg: rgba(16, 16, 20, 0.6);
+            --menu-bg: rgba(16, 16, 20, 0.65);
             --text-color: #ffffff;
             --border-color: rgba(255, 255, 255, 0.15);
             --accent-color: #007aff;
@@ -46,7 +46,7 @@
         .nav-item { display: flex; align-items: center; font-weight: 400; cursor: pointer; }
         .nav-item.bold { font-weight: 600; }
 
-        /* Right-Click Menus */
+        /* Context Menus */
         .context-menu {
             position: absolute; background: rgba(25, 25, 30, 0.9); backdrop-filter: var(--bg-blur);
             border: 1px solid var(--border-color); border-radius: 10px; width: 180px; padding: 6px 0;
@@ -56,7 +56,7 @@
         .context-item:hover { background: var(--accent-color); }
         .context-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0; }
 
-        /* Desktop Nodes (Files & Folders) */
+        /* Desktop Nodes */
         .desktop-node {
             position: absolute; display: flex; flex-direction: column; align-items: center;
             text-align: center; width: 85px; gap: 6px; font-size: 12px; color: white;
@@ -66,14 +66,14 @@
         .desktop-node:hover { background: rgba(255,255,255,0.15); }
         .desktop-node.drag-hover { background: rgba(34, 197, 94, 0.4) !important; transform: scale(1.1); border: 2px dashed #22c55e; }
         
-        /* Custom High-Quality CSS Icons */
+        /* Icons */
         .folder-icon { width: 44px; height: 34px; background: #3b82f6; border-radius: 4px; position: relative; border-top-left-radius: 0; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         .folder-icon::before { content: ''; position: absolute; top: -5px; left: 0; width: 16px; height: 5px; background: #3b82f6; border-top-left-radius: 3px; border-top-right-radius: 3px; }
         .file-icon { width: 32px; height: 40px; background: #f4f4f5; border-radius: 3px; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         .file-icon::before { content: ''; position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: #d4d4d8; border-bottom-left-radius: 3px; }
         .bin-icon { font-size: 38px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.4)); }
 
-        /* Windows Layout */
+        /* Windows */
         .window {
             position: absolute; background: var(--window-bg);
             backdrop-filter: var(--bg-blur); -webkit-backdrop-filter: var(--bg-blur);
@@ -96,9 +96,21 @@
 
         .app-split-container { display: flex; height: 100%; }
         .app-sidebar { width: 140px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; }
-        .sidebar-row { padding: 6px 12px; border-radius: 6px; font-size: 13px; color: #a1a1aa; }
+        .sidebar-row { padding: 6px 12px; border-radius: 6px; font-size: 13px; color: #a1a1aa; cursor: pointer; }
         .sidebar-row.active { background: rgba(255,255,255,0.1); color: #fff; font-weight: 500; }
         .app-main-view { flex: 1; padding: 20px; overflow-y: auto; }
+
+        /* Finder Inner File Display Lists */
+        .finder-list-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #e4e4e7; cursor: pointer; transition: background 0.15s; margin-bottom: 4px; }
+        .finder-list-item:hover { background: rgba(255, 255, 255, 0.08); }
+
+        /* Terminal Window UI styling */
+        .terminal-container { display: flex; flex-direction: column; height: 100%; background: #0c0c0d; font-family: 'Courier New', Courier, monospace; font-size: 13px; color: #38bdf8; padding: 12px; }
+        .terminal-output { flex: 1; overflow-y: auto; white-space: pre-wrap; margin-bottom: 8px; line-height: 1.4; color: #f8fafc; }
+        .terminal-input-line { display: flex; align-items: center; gap: 4px; }
+        .terminal-prompt { color: #a855f7; font-weight: bold; white-space: nowrap; }
+        .terminal-input { flex: 1; background: transparent; border: none; outline: none; color: #38bdf8; font-family: inherit; font-size: inherit; }
+        .terminal-input:disabled { color: #52525b; cursor: not-allowed; }
 
         /* Recycle Bin UI Lists */
         .bin-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; font-size: 13px; border: 1px solid rgba(255,255,255,0.05); }
@@ -107,18 +119,25 @@
         .bin-restore { background: #22c55e; }
         .bin-wipe { background: #ef4444; }
 
-        /* App Store Items UI */
+        /* App Store UI */
         .store-shelf { display: flex; flex-direction: column; gap: 12px; }
         .store-item-row { background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
         .store-meta { display: flex; gap: 12px; align-items: center; }
         .btn-install { background: #007aff; color: white; border: none; padding: 6px 14px; border-radius: 14px; font-weight: 600; font-size: 12px; cursor: pointer; }
         .btn-install.uninstall-btn { background: #ef4444; }
         .btn-install:disabled { background: rgba(255,255,255,0.1); color: #71717a; cursor: not-allowed; }
+        
+        /* Live Memory Dashboard Styling */
+        .memory-dashboard { background: rgba(255, 255, 255, 0.05); border: 1px dashed var(--border-color); border-radius: 8px; padding: 10px; margin-bottom: 16px; font-size: 12px; }
+        .memory-bar-container { background: #27272a; border-radius: 4px; height: 8px; width: 100%; margin-top: 6px; overflow: hidden; position: relative; }
+        .memory-bar-fill { background: #38bdf8; height: 100%; width: 0%; transition: width 0.3s ease; }
+        .memory-bar-fill.milestone { background: #ff4545; }
 
         /* Notes Layout Updates */
         .notes-container { display: flex; flex-direction: column; height: 100%; }
-        .notes-area { flex: 1; width: 100%; background: #1e1e1e; color: #f4f4f5; border: none; padding: 16px; font-family: inherit; font-size: 14px; outline: none; resize: none; }
+        .notes-area { flex: 1; width: 100%; background: #1e1e1e; color: #f4f4f5; border: none; padding: 16px; font-family: inherit; font-size: 14px; outline: none; resize: none; border-bottom: 1px solid var(--border-color); }
         .notes-toolbar { height: 40px; background: #27272a; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 12px; color: #aaa; }
+        .notes-btn-group { display: flex; gap: 6px; }
 
         /* Final Cut Pro UI Workspace */
         .fcp-container { display: flex; flex-direction: column; height: 100%; background: #111; font-size: 12px; }
@@ -130,6 +149,11 @@
         .fcp-track { flex: 1; background: #27272a; border-radius: 4px; position: relative; overflow: hidden; height: 30px; }
         .fcp-clip { position: absolute; left: 10%; width: 60%; height: 100%; background: linear-gradient(90deg, #be185d, #ec4899); border-radius: 4px; display: flex; align-items: center; padding-left: 10px; font-weight: bold; }
         .fcp-playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: #ef4444; left: 0%; transition: left 0.1s linear; }
+
+        /* Wallpaper Grid View Picker App styles */
+        .wp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+        .wp-thumb { border: 2px solid #3f3f46; border-radius: 8px; cursor: pointer; padding: 25px 10px; text-align: center; font-weight: bold; font-size: 12px; transition: border-color 0.2s; }
+        .wp-thumb:hover { border-color: #007aff; background: rgba(255,255,255,0.05); }
 
         /* Bitmap Canvas Grid App */
         .bitmap-container { display: flex; flex-direction: column; height: 100%; padding: 12px; align-items: center; gap: 10px; }
@@ -144,6 +168,15 @@
         .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .calc-btn { background: #3a3a3e; border: none; border-radius: 50%; color: white; height: 42px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .calc-btn.orange { background: #ff9f0a; } .calc-btn.gray { background: #a5a5a5; color: black; }
+
+        /* Gamepad Diagnostic Display Panel UI */
+        .gamepad-diagnostic-panel {
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 8px;
+            padding: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px;
+        }
+        .gp-row { display: flex; justify-content: space-between; font-size: 12px; font-family: monospace; }
+        .gp-light-indicator { width: 12px; height: 12px; border-radius: 50%; background: #52525b; transition: background 0.2s; }
+        .gp-light-indicator.active { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 
         /* System Dock Config */
         .dock-container {
@@ -161,12 +194,14 @@
         .texture-notes { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .texture-calc { background: linear-gradient(135deg, #f97316, #c2410c); }
         .texture-bitmap { background: linear-gradient(135deg, #10b981, #047857); }
+        .texture-wallpaper { background: linear-gradient(135deg, #a855f7, #6366f1); }
         .texture-dev { background: linear-gradient(135deg, #6366f1, #4338ca); color: white; font-weight: 800; font-size: 15px; }
+        .texture-terminal { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid rgba(255,255,255,0.2); color: #38bdf8; font-family: monospace; font-weight: bold; }
         .texture-fpro { background: linear-gradient(135deg, #ec4899, #9d174d); }
         .texture-poppy { background: linear-gradient(135deg, #ef4444, #7f1d1d); }
         .texture-roblox { background: linear-gradient(135deg, #6b7280, #111827); }
+        .texture-miraculous { background: linear-gradient(135deg, #e11d48, #000000); color: white; font-weight: 900; }
 
-        /* App Store Design */
         .texture-store { background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: inset 0 0 12px rgba(255,255,255,0.25); position: relative; }
         .store-blueprint-logo { width: 70%; height: 70%; position: relative; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .store-blueprint-logo::before, .store-blueprint-logo::after { content: ''; position: absolute; background: #ffffff; width: 4px; height: 26px; border-radius: 2px; }
@@ -186,7 +221,7 @@
 </head>
 <body onclick="closeDropdowns()">
 
-    <!-- AUTH MODULE: LOCK SCREEN -->
+    <!-- AUTH SCREEN -->
     <div class="lock-screen" id="lock-screen">
         <div class="lock-avatar">🕹️</div>
         <h2 style="font-size:18px; font-weight:600;">TINYTACTIX Developer OS</h2>
@@ -196,17 +231,17 @@
 
     <div class="desktop-canvas" id="canvas" oncontextmenu="openContextMenu(event, 'desktop')">
         
-        <!-- Permanent Recycle Bin Asset -->
-        <div class="desktop-node" id="system-recycle-bin" style="left: 20px; top: 40px;" dblclick="toggleWin('app-bin')" ondblclick="toggleWin('app-bin')">
+        <!-- Permanent Recycle Bin -->
+        <div class="desktop-node" id="system-recycle-bin" style="left: 20px; top: 40px;" ondblclick="toggleWin('app-bin')">
             <div class="bin-icon">🗑️</div>
             <span style="font-weight: 600;">Recycle Bin</span>
         </div>
 
-        <!-- System Top Bar -->
+        <!-- Top Navigation Status Bar -->
         <div class="top-navbar">
             <div class="nav-group">
                 <div class="nav-item" onclick="lockSystem()" style="margin-right:4px;">🔒</div>
-                <div class="nav-item bold">Finder</div>
+                <div class="nav-item bold" id="nav-active-app-title">Finder</div>
                 <div class="nav-item">File</div><div class="nav-item">Edit</div><div class="nav-item">Go</div>
             </div>
             <div class="nav-group" style="gap: 12px;">
@@ -216,7 +251,7 @@
             </div>
         </div>
 
-        <!-- Custom Context Menu for Desktop Background -->
+        <!-- Desktop Action Menu Layout -->
         <div class="context-menu" id="desktop-menu" onclick="event.stopPropagation()">
             <div class="context-item" onclick="createNewNode('folder')">New Folder <span>📁</span></div>
             <div class="context-item" onclick="createNewNode('file')">New Text File <span>📄</span></div>
@@ -226,14 +261,14 @@
             <div class="context-item" onclick="changeWallpaper('space')">Theme: Deep Space</div>
         </div>
 
-        <!-- Custom Context Menu for Files and Folders -->
+        <!-- Node Configuration Dropdown -->
         <div class="context-menu" id="node-menu" onclick="event.stopPropagation()">
             <div class="context-item" onclick="triggerRenameNode()">Rename Item <span>✏️</span></div>
             <div class="context-divider"></div>
             <div class="context-item" style="color: #ef4444;" onclick="triggerDeleteNode()">Move to Trash <span>🗑️</span></div>
         </div>
 
-        <!-- APP CONTAINER: RECYCLE BIN MODULE -->
+        <!-- RECYCLE BIN -->
         <div class="window" id="app-bin" style="width: 440px; height: 300px; top: 120px; left: 140px;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-bin')">
                 <div class="window-dots">
@@ -251,8 +286,8 @@
             </div>
         </div>
 
-        <!-- APP CONTAINER: FINDER SYSTEM -->
-        <div class="window" id="app-finder" style="width: 500px; height: 320px; top: 100px; left: 160px;">
+        <!-- FINDER VIEW WINDOW -->
+        <div class="window" id="app-finder" style="width: 520px; height: 340px; top: 100px; left: 160px;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-finder')">
                 <div class="window-dots">
                     <div class="dot d-close" onclick="closeWin('app-finder')"><span>✕</span></div>
@@ -263,7 +298,7 @@
             </div>
             <div class="view-frame app-split-container">
                 <div class="app-sidebar">
-                    <div class="sidebar-row active">🖥️ Desktop</div>
+                    <div class="sidebar-row active" onclick="renderExplorerRoot()">🖥️ Desktop</div>
                 </div>
                 <div class="app-main-view" id="finder-file-view">
                     <p style="color: #71717a; font-size: 13px;">Double-click any folder to display inside configuration contents.</p>
@@ -271,8 +306,45 @@
             </div>
         </div>
 
-        <!-- APP CONTAINER: NOTES MODULE (WRITABLE TEXT CORE) -->
-        <div class="window" id="app-notes" style="width: 460px; height: 320px; top: 150px; left: 220px;">
+        <!-- INTERACTIVE TERMINAL APP -->
+        <div class="window" id="app-terminal" style="width: 540px; height: 400px; top: 80px; left: 200px;">
+            <div class="title-bar" onmousedown="startDrag(event, 'app-terminal')">
+                <div class="window-dots">
+                    <div class="dot d-close" onclick="closeWin('app-terminal')"><span>✕</span></div>
+                    <div class="dot d-min" onclick="minimizeWin('app-terminal')"><span>−</span></div>
+                    <div class="dot d-max" onclick="maximizeWin('app-terminal')"><span>+</span></div>
+                </div>
+                <div class="win-heading">Terminal (sh)</div>
+            </div>
+            <div class="view-frame" style="display: flex; flex-direction: column;">
+                <div class="terminal-container" style="flex: 1;" onclick="document.getElementById('term-input').focus()">
+                    <div class="terminal-output" id="term-output">TinyTactix Operating System Core [Version 9.0]
+Type 'help' to see list of available commands. Try out the 'evofox test' hardware diagnostic!
+</div>
+                    <div class="terminal-input-line">
+                        <span class="terminal-prompt">tinytactix@kernel:~$&nbsp;</span>
+                        <input type="text" class="terminal-input" id="term-input" autocomplete="off" autofocus onkeydown="runTerminalCommand(event)">
+                    </div>
+                </div>
+                <!-- Gamepad Visual Diagnostic Sub-Panel Layout -->
+                <div class="gamepad-diagnostic-panel" id="gamepad-visual-monitor">
+                    <div class="gp-row">
+                        <span style="font-weight: bold; color: #a855f7;">🎮 EvoFox Hardware Visual Tracer</span>
+                        <div class="gp-light-indicator" id="gp-led-status"></div>
+                    </div>
+                    <div class="gp-row" style="color: #a1a1aa;">
+                        <span>Device Hub: <span id="gp-model-name">Disconnected</span></span>
+                        <span>Link Rate: <span id="gp-refresh-rate">0ms</span></span>
+                    </div>
+                    <div class="gp-row" style="color: #6b7280; font-size: 11px;">
+                        <span>Active Keys mapping: <span id="gp-buttons-pressed">None</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTES APPLICATION MODULE -->
+        <div class="window" id="app-notes" style="width: 480px; height: 320px; top: 150px; left: 220px;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-notes')">
                 <div class="window-dots">
                     <div class="dot d-close" onclick="closeWin('app-notes')"><span>✕</span></div>
@@ -283,14 +355,17 @@
             </div>
             <div class="view-frame notes-container">
                 <div class="notes-toolbar">
-                    <span id="active-file-title">Editing: Scratchpad Mode</span>
-                    <button class="fcp-btn" style="background:#007aff; border:none; padding: 2px 8px;" onclick="saveActiveTextFile()">Save File</button>
+                    <span id="active-file-title" style="font-weight: 500;">Editing: Scratchpad Mode</span>
+                    <div class="notes-btn-group">
+                        <button class="fcp-btn" style="background:#22c55e; border:none; padding: 2px 8px;" onclick="exportVirtualFileToRealPC()">Export to PC 💾</button>
+                        <button class="fcp-btn" style="background:#007aff; border:none; padding: 2px 8px;" onclick="saveActiveTextFile()">Save File</button>
+                    </div>
                 </div>
                 <textarea class="notes-area" id="notes-content-box" placeholder="Type text inside your document here..."></textarea>
             </div>
         </div>
 
-        <!-- APP CONTAINER: WORKING CALCULATOR -->
+        <!-- CALCULATOR INTERFACE -->
         <div class="window" id="app-calc" style="width: 250px; height: 360px; top: 120px; left: 450px;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-calc')">
                 <div class="window-dots">
@@ -328,7 +403,7 @@
             </div>
         </div>
 
-        <!-- APP CONTAINER: BITMAP CANVAS DRAWING TOOL -->
+        <!-- BITMAP PAINT APP -->
         <div class="window" id="app-bitmap" style="width: 300px; height: 350px; top: 80px; left: 320px;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-bitmap')">
                 <div class="window-dots">
@@ -352,8 +427,35 @@
             </div>
         </div>
 
-        <!-- APP CONTAINER: REAL APP STORE APP -->
-        <div class="window" id="app-store" style="width: 550px; height: 360px; top: 120px; left: 160px;">
+        <!-- WALLPAPER PICKER WINDOW -->
+        <div class="window" id="app-wallpaper" style="width: 420px; height: 340px; top: 130px; left: 360px;">
+            <div class="title-bar" onmousedown="startDrag(event, 'app-wallpaper')">
+                <div class="window-dots">
+                    <div class="dot d-close" onclick="closeWin('app-wallpaper')"><span>✕</span></div>
+                    <div class="dot d-min" onclick="minimizeWin('app-wallpaper')"><span>−</span></div>
+                    <div class="dot d-max" onclick="maximizeWin('app-wallpaper')"><span>+</span></div>
+                </div>
+                <div class="win-heading">Wallpaper Gallery</div>
+            </div>
+            <div class="view-frame" style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+                <h4 style="color: #a1a1aa; font-size: 13px;">Select Desktop Theme:</h4>
+                <div class="wp-grid">
+                    <div class="wp-thumb" style="background: linear-gradient(135deg, #09090b, #27272a); color: #fff;" onclick="changeWallpaper('cyber')">Cyber Dark</div>
+                    <div class="wp-thumb" style="background: linear-gradient(135deg, #f43f5e, #ca8a04, #1e1b4b); color: #fff;" onclick="changeWallpaper('sunset')">Neon Sunset</div>
+                    <div class="wp-thumb" style="background: radial-gradient(circle, #4338ca, #020617); color: #fff;" onclick="changeWallpaper('space')">Deep Space</div>
+                </div>
+                
+                <h4 style="color: #a1a1aa; font-size: 13px; margin-top: 6px;">Custom Engine Matrix Color Builder:</h4>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="color" id="custom-wp-color-input" style="background: transparent; border: none; width: 40px; height: 30px; cursor: pointer;">
+                    <button class="fcp-btn" onclick="applyCustomSolidWallpaper()">Apply Built Hex Color</button>
+                    <button class="fcp-btn" style="background: #a855f7; border: none;" onclick="applyRandomGradientWallpaper()">Randomize Matrix Gradient</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTRAL APP STORE MODULE WITH STORAGE REPORT MATRIX -->
+        <div class="window" id="app-store" style="width: 560px; height: 420px; top: 80px; left: 160px;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-store')">
                 <div class="window-dots">
                     <div class="dot d-close" onclick="closeWin('app-store')"><span>✕</span></div>
@@ -367,26 +469,43 @@
                     <div class="sidebar-row active">🎮 Discover Games</div>
                 </div>
                 <div class="app-main-view">
-                    <h3 style="margin-bottom: 14px; font-size:16px;">Featured Engine Software</h3>
+                    <div class="memory-dashboard">
+                        <div style="display:flex; justify-content:space-between; font-weight:600;">
+                            <span>💾 Core Allocation Matrix</span>
+                            <span id="store-memory-text">Available: 128GB / 128GB</span>
+                        </div>
+                        <div class="memory-bar-container">
+                            <div class="memory-bar-fill" id="store-memory-bar"></div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 14px; font-size:15px;">Featured Engine Software</h3>
                     <div class="store-shelf">
                         <div class="store-item-row">
                             <div class="store-meta">
                                 <div style="font-size:24px;">🎬</div>
-                                <div><h4>Final Cut Pro</h4><p style="font-size:11px; color:#aaa;">Video Suite</p></div>
+                                <div><h4>Final Cut Pro</h4><p style="font-size:11px; color:#aaa;">Video Suite • 50GB</p></div>
                             </div>
                             <button class="btn-install" id="get-fcp" onclick="handleAppToggle('fcp', 'get-fcp')">Get</button>
                         </div>
                         <div class="store-item-row">
                             <div class="store-meta">
+                                <div style="font-size:24px;">🐞</div>
+                                <div><h4>Miraculous Studio</h4><p style="font-size:11px; color:#aaa;">Cinematic Script Engine • 45GB</p></div>
+                            </div>
+                            <button class="btn-install" id="get-miraculous" onclick="handleAppToggle('miraculous', 'get-miraculous')">Get</button>
+                        </div>
+                        <div class="store-item-row">
+                            <div class="store-meta">
                                 <div style="font-size:24px;">🧸</div>
-                                <div><h4>Poppy Playtime</h4><p style="font-size:11px; color:#aaa;">Horror Survival Game</p></div>
+                                <div><h4>Poppy Playtime</h4><p style="font-size:11px; color:#aaa;">Horror Survival Game • 35GB</p></div>
                             </div>
                             <button class="btn-install" id="get-poppy" onclick="handleAppToggle('poppy', 'get-poppy')">Get</button>
                         </div>
                         <div class="store-item-row">
                             <div class="store-meta">
                                 <div style="font-size:24px;">🧱</div>
-                                <div><h4>Roblox Simulator</h4><p style="font-size:11px; color:#aaa;">Sandbox Creator Block Game</p></div>
+                                <div><h4>Roblox Simulator</h4><p style="font-size:11px; color:#aaa;">Sandbox Creator Block Game • 20GB</p></div>
                             </div>
                             <button class="btn-install" id="get-roblox" onclick="handleAppToggle('roblox', 'get-roblox')">Get</button>
                         </div>
@@ -395,7 +514,7 @@
             </div>
         </div>
 
-        <!-- APP CONTAINER: FINAL CUT PRO APP -->
+        <!-- FINAL CUT PRO VIDEO SIMULATOR -->
         <div class="window" id="app-fcp" style="width: 580px; height: 380px; top: 60px; left: 240px;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-fcp')">
                 <div class="window-dots">
@@ -427,7 +546,33 @@
             </div>
         </div>
 
-        <!-- APP CONTAINER: POPPY PLAYTIME SIMULATOR -->
+        <!-- MIRACULOUS CINEMATIC CREATIVE ENVIRONMENT -->
+        <div class="window" id="app-miraculous" style="width: 460px; height: 360px; top: 90px; left: 210px;">
+            <div class="title-bar" onmousedown="startDrag(event, 'app-miraculous')">
+                <div class="window-dots">
+                    <div class="dot d-close" onclick="closeWin('app-miraculous')"><span>✕</span></div>
+                    <div class="dot d-min" onclick="minimizeWin('app-miraculous')"><span>−</span></div>
+                    <div class="dot d-max" onclick="maximizeWin('app-miraculous')"><span>+</span></div>
+                </div>
+                <div class="win-heading">Miraculous Engine Workspace</div>
+            </div>
+            <div class="view-frame" style="display:flex; flex-direction:column; padding:16px; background:#111; gap:12px;">
+                <h3 style="color:#e11d48;">Miraculous 2: The Movie Studio</h3>
+                <p style="font-size:12px; color:#a1a1aa;">Compile scripts, structural cinematic assets, and dynamic entity models directly here.</p>
+                
+                <div style="background:#1e1e1e; border:1px solid #333; padding:10px; border-radius:6px; font-family:monospace; font-size:12px; color:#22c55e; max-height: 120px; overflow-y: auto;" id="miraculous-script-box">
+                    [System Core Active Profile]: Director Mode<br>
+                    [Project State]: Pre-Production Pipeline Matrix
+                </div>
+                
+                <div style="display: flex; gap: 8px;">
+                    <button class="fcp-btn" style="background:#e11d48; border:none; padding:8px; flex: 1;" onclick="generateMiraculousScript()">Generate Trailer Script Plot</button>
+                    <button class="fcp-btn" style="background:#27272a; border:none; padding:8px;" onclick="triggerSystemBeep(523, 'sine', 0.15)">Render Logo</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- POPPY PLAYTIME SIMULATION GAME -->
         <div class="window" id="app-poppy" style="width: 400px; height: 280px; top: 140px; left: 260px;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-poppy')">
                 <div class="window-dots">
@@ -440,11 +585,11 @@
             <div class="view-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; text-align:center; gap:10px;">
                 <h1 style="color:#ef4444; font-size:24px; letter-spacing:2px;">POPPY PLAYTIME</h1>
                 <p style="color:#666; font-size:12px;">Engine Sandbox Level Connected. Monitoring Chapter Core...</p>
-                <button class="fcp-btn" style="background:#ef4444; border:none;" onclick="alert('Huggy Wuggy Jumpscare Engine Operational!')">Launch Game Build</button>
+                <button class="fcp-btn" style="background:#ef4444; border:none;" onclick="triggerSystemBeep(120, 'sawtooth', 0.6)">Launch Game Build</button>
             </div>
         </div>
 
-        <!-- APP CONTAINER: ROBLOX ENGINE GAME MODULE -->
+        <!-- ROBLOX SIMULATOR APP -->
         <div class="window" id="app-roblox" style="width: 420px; height: 280px; top: 160px; left: 280px;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-roblox')">
                 <div class="window-dots">
@@ -457,12 +602,12 @@
             <div class="view-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#1f2937; text-align:center; gap:12px;">
                 <div style="font-size:36px;">🥈</div>
                 <h2 style="color:white; font-size:20px;">Roblox Sandbox Environment</h2>
-                <button class="fcp-btn" style="background:#3b82f6; border:none;" onclick="alert('Connecting to Roblox Server Matrix Node...')">Join TinyTactix Server</button>
+                <button class="fcp-btn" style="background:#3b82f6; border:none;" onclick="triggerSystemBeep(440, 'triangle', 0.2)">Join TinyTactix Server</button>
             </div>
         </div>
 
-        <!-- APP CONTAINER: ABOUT MODULE -->
-        <div class="window" id="app-dev" style="width: 440px; height: 260px; top: 180px; left: 220px; display: block; z-index: 1001;">
+        <!-- SYSTEM INFORMATION APP -->
+        <div class="window" id="app-dev" style="width: 440px; height: 360px; top: 180px; left: 220px; display: block; z-index: 1001;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-dev')">
                 <div class="window-dots">
                     <div class="dot d-close" onclick="closeWin('app-dev')"><span>✕</span></div>
@@ -471,18 +616,36 @@
                 </div>
                 <div class="win-heading">About The Developer</div>
             </div>
-            <div class="view-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; gap:10px;">
-                <div style="font-size:40px;">🕹️</div>
-                <h2 style="font-weight:700;">TINYTACTIX Pro OS Build v4</h2>
-                <p style="font-size:12px; color:#a1a1aa;">Double-click text files to write inside them! Use the desktop Recycle Bin to restore nodes or delete them forever.</p>
+            <div class="view-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; gap:12px;">
+                <div style="font-size:36px;">🕹️</div>
+                <h2 style="font-weight:700;">TINYTACTIX Pro OS Build v9.0</h2>
+                
+                <!-- YouTube Channel Analytics Simulator Widget -->
+                <div style="background: rgba(255,255,255,0.05); padding: 10px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); width: 100%;">
+                    <div style="font-size: 11px; color: #ff4545; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">🔴 YouTube Channel Live Tracker</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #fff; margin: 2px 0;">TinyTactix Hub</div>
+                    <div style="font-size: 12px; color: #a1a1aa; display: flex; justify-content: space-between;" id="live-subs-counter">
+                        <span>Subscribers Matrix: Loading...</span>
+                        <span style="font-weight: bold; color: #ff4545;">Goal: 1K</span>
+                    </div>
+                    <div class="memory-bar-container" style="height: 6px; margin-top: 6px;">
+                        <div class="memory-bar-fill milestone" id="subs-milestone-bar" style="width: 95%;"></div>
+                    </div>
+                </div>
+                
+                <p style="font-size:11px; color:#888;">Drag elements together seamlessly! Save changes inside Notes to immediately update components.</p>
             </div>
         </div>
 
-        <!-- Launch System Dock -->
+        <!-- macOS Native Bottom System Dock -->
         <div class="dock-container" id="dock">
             <div class="dock-element" id="dock-trigger-app-finder" onclick="toggleWin('app-finder')">
                 <div class="dock-label">Finder</div>
                 <div class="dock-app-tile texture-finder"><div class="folder-icon" style="box-shadow:none;"></div></div>
+            </div>
+            <div class="dock-element" id="dock-trigger-app-terminal" onclick="toggleWin('app-terminal')">
+                <div class="dock-label">Terminal</div>
+                <div class="dock-app-tile texture-terminal">_&gt;</div>
             </div>
             <div class="dock-element" id="dock-trigger-app-notes" onclick="toggleWin('app-notes')">
                 <div class="dock-label">Notes</div>
@@ -495,6 +658,10 @@
             <div class="dock-element" id="dock-trigger-app-bitmap" onclick="toggleWin('app-bitmap')">
                 <div class="dock-label">Bitmap Painter</div>
                 <div class="dock-app-tile texture-bitmap">🎨</div>
+            </div>
+            <div class="dock-element" id="dock-trigger-app-wallpaper" onclick="toggleWin('app-wallpaper')">
+                <div class="dock-label">Wallpapers</div>
+                <div class="dock-app-tile texture-wallpaper">🖼️</div>
             </div>
             <div class="dock-element" id="dock-trigger-app-store" onclick="toggleWin('app-store')">
                 <div class="dock-label">App Store</div>
@@ -509,10 +676,14 @@
                 <div class="dock-app-tile texture-dev">TT</div>
             </div>
 
-            <!-- Dynamic Apps -->
+            <!-- Downloadable Engine Core Nodes -->
             <div class="dock-element" id="dock-fcp" style="display:none;" onclick="toggleWin('app-fcp')">
                 <div class="dock-label">Final Cut Pro</div>
                 <div class="dock-app-tile texture-fpro">🎬</div>
+            </div>
+            <div class="dock-element" id="dock-miraculous" style="display:none;" onclick="toggleWin('app-miraculous')">
+                <div class="dock-label">Miraculous Studio</div>
+                <div class="dock-app-tile texture-miraculous">🐞</div>
             </div>
             <div class="dock-element" id="dock-poppy" style="display:none;" onclick="toggleWin('app-poppy')">
                 <div class="dock-label">Poppy Playtime</div>
@@ -527,15 +698,41 @@
     </div>
 
     <script>
+        // Web Audio Synthesizer Engine Block
+        let audioCtx = null;
+        function initAudio() { if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } }
+        
+        function triggerSystemBeep(freq = 400, type = 'sine', duration = 0.1) {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) { console.log("Audio node deferred waiting for user initialization touch."); }
+        }
+
         function checkPasscode(input) {
             if (input.value === "1234") {
                 document.getElementById('lock-screen').style.display = 'none';
                 input.value = "";
+                triggerSystemBeep(587.33, 'sine', 0.25); // System Startup Note
+                setTimeout(() => {
+                    if (document.getElementById('app-terminal').style.display === 'flex') {
+                        runBootSequence();
+                    }
+                }, 400);
             }
         }
         function lockSystem() { document.getElementById('lock-screen').style.display = 'flex'; }
 
-        // Dock Scale Engine
+        // Magnification Scale Dock Engine Script
         const dock = document.getElementById('dock');
         const elements = () => document.querySelectorAll('.dock-element:not([style*="display: none"])');
         document.addEventListener('mousemove', (e) => {
@@ -554,7 +751,7 @@
             }
         });
 
-        // Window Management Focus Operations
+        // Application Top Window Level Balancing Focus
         let globalZ = 1000;
         document.querySelectorAll('.window').forEach(w => {
             w.addEventListener('mousedown', () => { focusElement(w); });
@@ -562,6 +759,10 @@
         function focusElement(el) { 
             if(el.style.display !== 'none') {
                 globalZ++; el.style.zIndex = globalZ; 
+                const winTitle = el.querySelector('.win-heading');
+                if(winTitle) {
+                    document.getElementById('nav-active-app-title').textContent = winTitle.textContent.split(' ')[0];
+                }
             }
         }
         
@@ -570,13 +771,21 @@
             if (window.getComputedStyle(target).display === 'none') {
                 target.style.display = 'flex';
                 focusElement(target);
+                triggerSystemBeep(349.23, 'sine', 0.08); // App launch sound
+                if(id === 'app-terminal') { 
+                    document.getElementById('term-input').focus(); 
+                    if(document.getElementById('term-output').textContent.includes("Version 9.0")) {
+                        runBootSequence();
+                    }
+                }
+                if(id === 'app-finder') { renderExplorerRoot(); }
             } else { closeWin(id); }
         }
         function closeWin(id) { document.getElementById(id).style.display = 'none'; }
         function maximizeWin(id) { const win = document.getElementById(id); win.classList.toggle('fullscreen-state'); }
         function minimizeWin(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Window Drag Mechanics
+        // Window Drag Controllers
         let activeEl = null; let offsetX = 0, offsetY = 0;
         function startDrag(e, id) {
             activeEl = document.getElementById(id);
@@ -596,7 +805,7 @@
         }
         function dragEnd() { activeEl = null; document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', dragEnd); }
 
-        // Adaptive Menu Routers
+        // Dropdown Menu Controllers
         let targetedNodeId = null;
         function openContextMenu(e, type, nodeId = null) {
             e.preventDefault();
@@ -626,30 +835,58 @@
             if (theme === 'space') canvas.style.background = 'radial-gradient(circle, #4338ca 0%, #0f172a 70%, #020617 100%)';
         }
 
-        // File/Folder Storage System Architecture
+        // Virtual File Management Framework Core
         let nodeCount = 0;
         let virtualFileSystem = {};
         let recycleBinStorage = {};
         let currentlyEditingFileId = null;
+        let currentExplorerFolderId = null; 
+
+        function loadVirtualFileSystem() {
+            const savedData = localStorage.getItem('macOS_VirtualFiles');
+            if (savedData) {
+                virtualFileSystem = JSON.parse(savedData);
+                Object.keys(virtualFileSystem).forEach(id => {
+                    const node = virtualFileSystem[id];
+                    renderNodeOnDesktop(node.id, node.type, node.name);
+                });
+            } else {
+                createNewNodeWithParams('file', 'Miraculous_Script.txt', "[Green Hehehog Entity]: The matrix belongs to the Miraculous Boss now! 🎬");
+                createNewNodeWithParams('file', 'TinyTactix_Plan.txt', "Plan strategy checklist: Reach channel milestone goals!");
+            }
+        }
 
         function createNewNode(type) {
             nodeCount++;
             const id = `node-${nodeCount}`;
             const name = type === 'folder' ? `Folder ${nodeCount}` : `Document ${nodeCount}.txt`;
+            const defaultContents = type === 'folder' ? [] : "Type anything you want inside this file layout parameter...";
             
-            virtualFileSystem[id] = { id: id, name: name, type: type, contents: type === 'folder' ? [] : "Type anything you want inside this file layout parameter..." };
+            virtualFileSystem[id] = { id: id, name: name, type: type, contents: defaultContents };
+            localStorage.setItem('macOS_VirtualFiles', JSON.stringify(virtualFileSystem));
 
+            renderNodeOnDesktop(id, type, name);
+            if (document.getElementById('app-finder').style.display === 'flex' && !currentExplorerFolderId) {
+                renderExplorerRoot();
+            }
+        }
+
+        function createNewNodeWithParams(type, name, content) {
+            nodeCount++;
+            const id = `node-${nodeCount}`;
+            virtualFileSystem[id] = { id: id, name: name, type: type, contents: content };
+            localStorage.setItem('macOS_VirtualFiles', JSON.stringify(virtualFileSystem));
             renderNodeOnDesktop(id, type, name);
         }
 
         function renderNodeOnDesktop(id, type, name) {
+            if (document.getElementById(id)) return; 
             const node = document.createElement('div');
             node.className = 'desktop-node';
             node.id = id;
             node.setAttribute('draggable', 'true');
             node.innerHTML = type === 'folder' ? `<div class="folder-icon"></div><span class="label-text">${name}</span>` : `<div class="file-icon"></div><span class="label-text">${name}</span>`;
             
-            // Layout Shift Grid Offsets
             const marginX = 130; const marginY = 40;
             const rowHeight = 90; const colWidth = 95;
             const maxRows = Math.floor((window.innerHeight - 120) / rowHeight);
@@ -674,7 +911,14 @@
                         virtualFileSystem[id].contents.push(virtualFileSystem[draggedId]);
                         const targetNode = document.getElementById(draggedId);
                         if(targetNode) targetNode.remove();
-                        alert(`Successfully shifted "${virtualFileSystem[draggedId].name}" inside "${virtualFileSystem[id].name}"!`);
+                        
+                        localStorage.setItem('macOS_VirtualFiles', JSON.stringify(virtualFileSystem));
+                        if (currentExplorerFolderId === id) {
+                            renderExplorerFolderView(id);
+                        } else if (!currentExplorerFolderId) {
+                            renderExplorerRoot();
+                        }
+                        triggerSystemBeep(261.63, 'sine', 0.1);
                     }
                 });
             }
@@ -692,14 +936,94 @@
                 if(type === 'file') {
                     openFileInNotes(id);
                 } else {
-                    renderExplorerView(id);
+                    renderExplorerFolderView(id);
                 }
             });
 
             document.getElementById('canvas').appendChild(node);
         }
 
-        // Notes Application Binding Interface
+        // Finder Data Renderer Modules
+        function renderExplorerRoot() {
+            currentExplorerFolderId = null;
+            const view = document.getElementById('finder-file-view');
+            const keys = Object.keys(virtualFileSystem);
+            
+            if (keys.length === 0) {
+                view.innerHTML = `<h3>🖥️ Desktop Root Directory</h3><p style="color:#52525b; font-size:13px; margin-top:20px;">No folders or data text files located.</p>`;
+                return;
+            }
+
+            let html = `<h3>🖥️ Desktop Directory Overview</h3><div style="margin-top:12px;">`;
+            keys.forEach(k => {
+                const node = virtualFileSystem[k];
+                html += `
+                    <div class="finder-list-item" ondblclick="handleFinderNodeDblClick('${node.id}')">
+                        <span>${node.type === 'folder' ? '📁' : '📄'}</span>
+                        <span>${node.name}</span>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            view.innerHTML = html;
+        }
+
+        function renderExplorerFolderView(id) {
+            currentExplorerFolderId = id;
+            const view = document.getElementById('finder-file-view');
+            const folder = virtualFileSystem[id];
+            if (!folder) return;
+
+            let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <h3>📁 ${folder.name} Contents</h3>
+                            <button class="fcp-btn" onclick="renderExplorerRoot()">↖ Back to Desktop</button>
+                        </div>`;
+            
+            if (!folder.contents || folder.contents.length === 0) {
+                html += `<p style="color:#52525b; font-size:13px; margin-top:20px;">This folder has no files inside it yet.</p>`;
+            } else {
+                html += `<div style="margin-top:8px;">`;
+                folder.contents.forEach((child, index) => {
+                    html += `
+                        <div class="finder-list-item" ondblclick="openNestedFolderFile('${id}', ${index})">
+                            <span>📄</span>
+                            <span>${child.name}</span>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+            view.innerHTML = html;
+            const finder = document.getElementById('app-finder');
+            finder.style.display = 'flex';
+            focusElement(finder);
+        }
+
+        function handleFinderNodeDblClick(id) {
+            const node = virtualFileSystem[id];
+            if (!node) return;
+            if (node.type === 'file') {
+                openFileInNotes(id);
+            } else {
+                renderExplorerFolderView(id);
+            }
+        }
+
+        function openNestedFolderFile(folderId, fileIndex) {
+            const folder = virtualFileSystem[folderId];
+            if (!folder || !folder.contents[fileIndex]) return;
+            
+            const fileData = folder.contents[fileIndex];
+            currentlyEditingFileId = `nested-${folderId}-${fileIndex}`;
+            
+            document.getElementById('active-file-title').textContent = `Editing nested file: ${fileData.name}`;
+            document.getElementById('notes-content-box').value = fileData.contents;
+            
+            const win = document.getElementById('app-notes');
+            win.style.display = 'flex';
+            focusElement(win);
+        }
+
         function openFileInNotes(id) {
             currentlyEditingFileId = id;
             const fileData = virtualFileSystem[id];
@@ -712,16 +1036,328 @@
         }
 
         function saveActiveTextFile() {
-            if(!currentlyEditingFileId || !virtualFileSystem[currentlyEditingFileId]) {
-                alert("No active text file open to apply changes!");
+            if (!currentlyEditingFileId) {
+                alert("No active text file open to save changes!");
                 return;
             }
+            
             const currentTxt = document.getElementById('notes-content-box').value;
-            virtualFileSystem[currentlyEditingFileId].contents = currentTxt;
-            alert(`Saved changes to "${virtualFileSystem[currentlyEditingFileId].name}" successfully!`);
+            
+            if (currentlyEditingFileId.startsWith('nested-')) {
+                const parts = currentlyEditingFileId.split('-');
+                const folderId = parts[1] + '-' + parts[2];
+                const fileIndex = parseInt(parts[3]);
+                
+                if (virtualFileSystem[folderId] && virtualFileSystem[folderId].contents[fileIndex]) {
+                    virtualFileSystem[folderId].contents[fileIndex].contents = currentTxt;
+                    localStorage.setItem('macOS_VirtualFiles', JSON.stringify(virtualFileSystem));
+                    triggerSystemBeep(523.25, 'sine', 0.1);
+                    alert(`Saved changes to nested folder document successfully!`);
+                    renderExplorerFolderView(folderId);
+                }
+            } else {
+                if (virtualFileSystem[currentlyEditingFileId]) {
+                    virtualFileSystem[currentlyEditingFileId].contents = currentTxt;
+                    localStorage.setItem('macOS_VirtualFiles', JSON.stringify(virtualFileSystem));
+                    triggerSystemBeep(523.25, 'sine', 0.1);
+                    alert(`Saved changes to "${virtualFileSystem[currentlyEditingFileId].name}" successfully!`);
+                }
+            }
         }
 
-        // Active Renaming Matrix Pipelines
+        function exportVirtualFileToRealPC() {
+            if (!currentlyEditingFileId) {
+                alert("Please open a valid text script file to export layout elements.");
+                return;
+            }
+            
+            let name = "Script_Export.txt";
+            let content = document.getElementById('notes-content-box').value;
+            
+            if (!currentlyEditingFileId.startsWith('nested-') && virtualFileSystem[currentlyEditingFileId]) {
+                name = virtualFileSystem[currentlyEditingFileId].name;
+            }
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+            element.setAttribute('download', name);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // DYNAMIC TERMINAL BOOT SEQUENCE
+        let isBooting = false;
+        
+        function appendTerminalLog(iconStatus, message) {
+            const outputEl = document.getElementById('term-output');
+            const icons = {
+                "INFO": "🔵 [ INFO ]",
+                "SUCCESS": "🟢 [  OK  ]",
+                "WARNING": "🟡 [ WARN ]",
+                "LOADING": "🔄 [ WAIT ]"
+            };
+            const icon = icons[iconStatus] || "⚪";
+            outputEl.textContent += `${icon} ${message}\n`;
+            outputEl.scrollTop = outputEl.scrollHeight;
+        }
+
+        function runBootSequence() {
+            if (isBooting) return;
+            isBooting = true;
+            
+            const inputEl = document.getElementById('term-input');
+            const outputEl = document.getElementById('term-output');
+            
+            inputEl.disabled = true;
+            outputEl.textContent = "==================================================\n";
+            outputEl.textContent += "        TINYTACTIX OS v9.0 - BOOT SEQUENCE        \n";
+            outputEl.textContent += "==================================================\n";
+            
+            const timeline = [
+                { action: () => { appendTerminalLog("INFO", "Initializing system kernel..."); triggerSystemBeep(220, 'square', 0.1); }, delay: 600 },
+                { action: () => { appendTerminalLog("INFO", "Loading audio sound synthesis matrices..."); triggerSystemBeep(440, 'sine', 0.1); }, delay: 800 },
+                { action: () => simulateProgress(() => appendTerminalLog("SUCCESS", "Graphics driver and desktop frame elements verified.")), delay: 1800 },
+                { action: () => appendTerminalLog("WARNING", "Unnecessary temporary data logs detected in partition sector!"), delay: 1000 },
+                { action: () => wipeSystemFilesSequence(), delay: 800 }
+            ];
+
+            let index = 0;
+            function step() {
+                if (index < timeline.length) {
+                    timeline[index].action();
+                    setTimeout(step, timeline[index].delay);
+                    index++;
+                }
+            }
+            step();
+        }
+
+        function simulateProgress(callback) {
+            const outputEl = document.getElementById('term-output');
+            let pct = 0;
+            const slots = 20;
+            
+            const interval = setInterval(() => {
+                pct += 10;
+                let fillCount = Math.floor(pct / 5);
+                let bar = "█".repeat(fillCount) + "░".repeat(slots - fillCount);
+                
+                let currentLines = outputEl.textContent.trim().split("\n");
+                if (currentLines[currentLines.length - 1].includes("[ LOAD ]")) {
+                    currentLines.pop();
+                }
+                outputEl.textContent = currentLines.join("\n") + `\n🔄 [ LOAD ] |${bar}| ${pct}%\n`;
+                outputEl.scrollTop = outputEl.scrollHeight;
+
+                if (pct >= 100) {
+                    clearInterval(interval);
+                    let cleanLines = outputEl.textContent.trim().split("\n");
+                    if (cleanLines[cleanLines.length - 1].includes("[ LOAD ]")) cleanLines.pop();
+                    outputEl.textContent = cleanLines.join("\n") + "\n";
+                    callback();
+                }
+            }, 80);
+        }
+
+        function wipeSystemFilesSequence() {
+            const outputEl = document.getElementById('term-output');
+            const inputEl = document.getElementById('term-input');
+            outputEl.textContent += "\n--- STARTING FILE CLEANUP SYSTEM ---\n";
+            
+            const files = ["temp_cache.sys", "old_logs.dat", "corrupted_sector_01.bin", "junk_data.tmp"];
+            let fileIndex = 0;
+
+            function clearNextFile() {
+                if (fileIndex < files.length) {
+                    appendTerminalLog("LOADING", `Clearing and shredding ${files[fileIndex]}...`);
+                    let randDelay = Math.floor(Math.random() * 500) + 600;
+                    
+                    setTimeout(() => {
+                        appendTerminalLog("SUCCESS", `Successfully deleted ${files[fileIndex]}!`);
+                        triggerSystemBeep(180, 'sawtooth', 0.05);
+                        outputEl.textContent += "----------------------------------------\n";
+                        outputEl.scrollTop = outputEl.scrollHeight;
+                        fileIndex++;
+                        clearNextFile();
+                    }, randDelay);
+                } else {
+                    setTimeout(() => {
+                        triggerSystemBeep(880, 'sine', 0.3); // Boot success flare
+                        appendTerminalLog("SUCCESS", "All junk files cleared! System optimization 100% complete.");
+                        outputEl.textContent += "==================================================\n";
+                        outputEl.textContent += "🚀 SYSTEM READY TO LAUNCH! TYPE 'HELP' FOR MATRIX LISTS.\n";
+                        outputEl.textContent += "==================================================\n";
+                        outputEl.scrollTop = outputEl.scrollHeight;
+                        inputEl.disabled = false;
+                        isBooting = false;
+                        inputEl.focus();
+                    }, 500);
+                }
+            }
+            clearNextFile();
+        }
+
+        // Live Gamepad Hardware Visual Tracer Tracker Loop Engine
+        function runGamepadLiveTracerLoop() {
+            const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+            const activeGP = Array.from(gamepads).find(gp => gp !== null);
+            
+            const led = document.getElementById('gp-led-status');
+            const nameModel = document.getElementById('gp-model-name');
+            const refresh = document.getElementById('gp-refresh-rate');
+            const btnKeys = document.getElementById('gp-buttons-pressed');
+
+            if (activeGP) {
+                led.classList.add('active');
+                nameModel.textContent = activeGP.id.substring(0, 22) + "...";
+                refresh.textContent = "4ms (Ultra)";
+                
+                let keysPressed = [];
+                activeGP.buttons.forEach((btn, idx) => {
+                    if (btn.pressed) keysPressed.push(`B${idx}`);
+                });
+                btnKeys.textContent = keysPressed.length > 0 ? keysPressed.join(", ") : "None";
+            } else {
+                led.classList.remove('active');
+                nameModel.textContent = "Disconnected";
+                refresh.textContent = "0ms";
+                btnKeys.textContent = "None";
+            }
+            requestAnimationFrame(runGamepadLiveTracerLoop);
+        }
+        requestAnimationFrame(runGamepadLiveTracerLoop);
+
+        // Terminal Prompt Console Processing Engine
+        function runTerminalCommand(event) {
+            if (event.key !== 'Enter') return;
+            const inputEl = document.getElementById('term-input');
+            const outputEl = document.getElementById('term-output');
+            const commandLine = inputEl.value.trim();
+            inputEl.value = '';
+
+            if (commandLine === '') return;
+
+            outputEl.textContent += `\ntinytactix@kernel:~$& ${commandLine}\n`;
+            
+            const parts = commandLine.split(' ');
+            const baseCmd = parts[0].toLowerCase();
+            const args = parts.slice(1).join(' ');
+
+            switch (baseCmd) {
+                case 'boot':
+                    runBootSequence();
+                    break;
+                case 'help':
+                    outputEl.textContent += `Available Commands Matrix:\n` +
+                                             `  help         - Display operational lists.\n` +
+                                             `  boot         - Re-run dynamic system log loading boot delay.\n` +
+                                             `  clear        - Wipe console screen buffer.\n` +
+                                             `  ls           - List active desktop architecture nodes.\n` +
+                                             `  cat [name]   - Stream document text context string.\n` +
+                                             `  rm [name]    - Move specified architecture node to Trash.\n` +
+                                             `  date         - Fetch current local framework time stamp.\n` +
+                                             `  lock         - Exit runtime execution layer back to Lock Screen.\n` +
+                                             `  evofox test  - Run Live Gamepad Core Matrix Vector Diagnostic Check.\n` +
+                                             `  tinytactix   - Display developer engine vector signature.\n`;
+                    break;
+                case 'clear':
+                    outputEl.textContent = '';
+                    break;
+                case 'evofox':
+                    if (parts[1] === 'test') {
+                        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+                        const activeGP = Array.from(gamepads).find(gp => gp !== null);
+                        
+                        outputEl.textContent += `--- Live Gamepad Core Matrix Analyzer ---\n`;
+                        if (activeGP) {
+                            outputEl.textContent += `[SUCCESS] Controller Connected: ${activeGP.id}\n` +
+                                                     `[Status]: LED Indicator Matrix Active | Performance: 100% Operational.\n`;
+                            triggerSystemBeep(600, 'sine', 0.15);
+                        } else {
+                            outputEl.textContent += `[WARNING] No gamepad detected in hardware node layer.\n` +
+                                                     `[Action Required]: Wake up your EvoFox One S controller by clicking any key, then re-run 'evofox test'.\n`;
+                            triggerSystemBeep(250, 'triangle', 0.25);
+                        }
+                    } else {
+                        outputEl.textContent += `--- EvoFox One S Wireless Controller Diagnostic ---\n` +
+                                                 `[Status]: Pipeline Connected via 2.4G USB Matrix Node\n` +
+                                                 `[Mode Hint]: Type 'evofox test' to perform a real-time connection scan!\n`;
+                    }
+                    break;
+                case 'ls':
+                    const keys = Object.keys(virtualFileSystem);
+                    if (keys.length === 0) {
+                        outputEl.textContent += `Directory empty.\n`;
+                    } else {
+                        keys.forEach(k => {
+                            const node = virtualFileSystem[k];
+                            let extra = node.type === 'folder' ? `(Contains ${node.contents.length} items)` : '';
+                            outputEl.textContent += `  ${node.type === 'folder' ? '[DIR]' : '[TXT]'}  ${node.name} ${extra}\n`;
+                        });
+                    }
+                    break;
+                case 'cat':
+                    if (!args) {
+                        outputEl.textContent += `Error: Specify target file parameters to output stream.\n`;
+                    } else {
+                        let target = Object.values(virtualFileSystem).find(n => n.name.toLowerCase() === args.toLowerCase() && n.type === 'file');
+                        if (target) {
+                            outputEl.textContent += `${target.contents}\n`;
+                        } else {
+                            let foundNested = false;
+                            Object.values(virtualFileSystem).forEach(n => {
+                                if (n.type === 'folder' && n.contents) {
+                                    let subFile = n.contents.find(c => c.name.toLowerCase() === args.toLowerCase());
+                                    if (subFile) {
+                                        outputEl.textContent += `[Found inside ${n.name}]:\n${subFile.contents}\n`;
+                                        foundNested = true;
+                                    }
+                                }
+                            });
+                            if (!foundNested) outputEl.textContent += `Error: Target data element "${args}" not verified.\n`;
+                        }
+                    }
+                    break;
+                case 'rm':
+                    if (!args) {
+                        outputEl.textContent += `Error: Specify node element payload target to wipe.\n`;
+                    } else {
+                        let target = Object.values(virtualFileSystem).find(n => n.name.toLowerCase() === args.toLowerCase());
+                        if (target) {
+                            recycleBinStorage[target.id] = virtualFileSystem[target.id];
+                            delete virtualFileSystem[target.id];
+                            localStorage.setItem('macOS_VirtualFiles', JSON.stringify(virtualFileSystem));
+                            document.getElementById(target.id).remove();
+                            updateRecycleBinUI();
+                            if (!currentExplorerFolderId) renderExplorerRoot();
+                            outputEl.textContent += `Successfully shifted "${target.name}" into Trash staging storage.\n`;
+                            triggerSystemBeep(150, 'sawtooth', 0.2);
+                        } else {
+                            outputEl.textContent += `Error: Node descriptor "${args}" could not be located.\n`;
+                        }
+                    }
+                    break;
+                case 'date':
+                    outputEl.textContent += `${new Date().toString()}\n`;
+                    break;
+                case 'lock':
+                    lockSystem();
+                    outputEl.textContent += `System configuration locked successfully.\n`;
+                    break;
+                case 'tinytactix':
+                    outputEl.textContent += `=========================================\n` +
+                                             `   TINYTACTIX GAMING OS ENGINE PLATFORM\n` +
+                                             `   Building Vector Matrix Architecture v9.0\n` +
+                                             `=========================================\n`;
+                    break;
+                default:
+                    outputEl.textContent += `Command "${baseCmd}" not recognized in this system build registry.\n`;
+            }
+            outputEl.scrollTop = outputEl.scrollHeight;
+        }
+
         function triggerRenameNode() {
             if (!targetedNodeId) return;
             const currentName = virtualFileSystem[targetedNodeId].name;
@@ -729,27 +1365,35 @@
             
             if (newName && newName.trim() !== "") {
                 virtualFileSystem[targetedNodeId].name = newName.trim();
+                localStorage.setItem('macOS_VirtualFiles', JSON.stringify(virtualFileSystem));
                 const nodeElement = document.getElementById(targetedNodeId);
                 if (nodeElement) {
                     nodeElement.querySelector('.label-text').textContent = newName.trim();
                 }
-                if(currentlyEditingFileId === targetedNodeId) {
+                if (currentlyEditingFileId === targetedNodeId) {
                     document.getElementById('active-file-title').textContent = `Editing: ${newName.trim()}`;
+                }
+                if (currentExplorerFolderId === targetedNodeId) {
+                    renderExplorerFolderView(targetedNodeId);
+                } else if (!currentExplorerFolderId) {
+                    renderExplorerRoot();
                 }
             }
             closeDropdowns();
         }
 
-        // Recycle Bin Trash Logic Core
         function triggerDeleteNode() {
             if (!targetedNodeId) return;
             const targetElement = document.getElementById(targetedNodeId);
             if (targetElement) {
-                // Move from virtual system stack to recycle storage stack
                 recycleBinStorage[targetedNodeId] = virtualFileSystem[targetedNodeId];
                 delete virtualFileSystem[targetedNodeId];
+                localStorage.setItem('macOS_VirtualFiles', JSON.stringify(virtualFileSystem));
                 targetElement.remove();
                 updateRecycleBinUI();
+                triggerSystemBeep(150, 'sawtooth', 0.2); // Trash execution crunch audio
+                if (currentExplorerFolderId === targetedNodeId) renderExplorerRoot();
+                else if (!currentExplorerFolderId) renderExplorerRoot();
             }
             closeDropdowns();
         }
@@ -780,9 +1424,11 @@
         function restoreNodeFromBin(id) {
             if(!recycleBinStorage[id]) return;
             virtualFileSystem[id] = recycleBinStorage[id];
+            localStorage.setItem('macOS_VirtualFiles', JSON.stringify(virtualFileSystem));
             renderNodeOnDesktop(id, virtualFileSystem[id].type, virtualFileSystem[id].name);
             delete recycleBinStorage[id];
             updateRecycleBinUI();
+            if(!currentExplorerFolderId) renderExplorerRoot();
         }
 
         function permanentlyWipeNode(id) {
@@ -794,52 +1440,68 @@
             }
             delete recycleBinStorage[id];
             updateRecycleBinUI();
+            triggerSystemBeep(100, 'sawtooth', 0.4);
         }
 
-        function renderExplorerView(id) {
-            const view = document.getElementById('finder-file-view');
-            const fileData = virtualFileSystem[id];
-            if (!fileData) return;
+        // ALLOCATION SYSTEM BUNDLER MECHANICS
+        let installedPackages = { fcp: false, miraculous: false, poppy: false, roblox: false };
+        const appSizes = { fcp: 50, miraculous: 45, poppy: 35, roblox: 20 };
+        let totalMemory = 128;
+        let availableMemory = 128;
 
-            if (fileData.type === 'folder') {
-                let itemsHtml = fileData.contents.map(item => `<li>📄 ${item.name}</li>`).join('');
-                view.innerHTML = `<h3>📁 ${fileData.name}</h3><p style="color:#aaa; font-size:12px; margin-top:4px;">Folder Contents:</p><ul>${itemsHtml || '<span style="color:#555;">Directory Empty</span>'}</ul>`;
-            } else {
-                view.innerHTML = `<h3>📄 ${fileData.name}</h3><p style="margin-top:6px; color:#34d399;">${fileData.contents}</p>`;
-            }
-            const finder = document.getElementById('app-finder'); finder.style.display = 'flex'; focusElement(finder);
+        function updateStoreMemoryUI() {
+            const textElement = document.getElementById('store-memory-text');
+            const barElement = document.getElementById('store-memory-bar');
+            
+            textElement.textContent = `Available: ${availableMemory}GB / ${totalMemory}GB`;
+            let usedPct = ((totalMemory - availableMemory) / totalMemory) * 100;
+            barElement.style.width = `${usedPct}%`;
         }
-
-        // App Store Toggle Pipeline Router
-        let installedPackages = { fcp: false, poppy: false, roblox: false };
 
         function handleAppToggle(appKey, btnId) {
             const btn = document.getElementById(btnId);
             const targetDockElement = document.getElementById(`dock-${appKey}`);
+            const appSize = appSizes[appKey];
 
             if (!installedPackages[appKey]) {
-                btn.disabled = true; btn.textContent = "Installing...";
+                if (appSize > availableMemory) {
+                    triggerSystemBeep(220, 'sine', 0.3);
+                    alert(`❌ [ERROR] Insufficient memory matrix! Need ${appSize}GB, but only ${availableMemory}GB is free.`);
+                    return;
+                }
+
+                btn.disabled = true; 
+                btn.textContent = "Installing...";
+                
                 setTimeout(() => {
                     installedPackages[appKey] = true;
+                    availableMemory -= appSize;
+                    updateStoreMemoryUI();
+                    
                     btn.disabled = false;
                     btn.textContent = "Uninstall";
                     btn.classList.add('uninstall-btn');
                     
                     targetDockElement.style.display = 'flex';
                     targetDockElement.classList.add('app-bounce');
+                    triggerSystemBeep(493.88, 'sine', 0.15);
                     setTimeout(() => { targetDockElement.classList.remove('app-bounce'); }, 1500);
                 }, 1000);
             } else {
                 installedPackages[appKey] = false;
+                availableMemory += appSize;
+                updateStoreMemoryUI();
+                
                 btn.textContent = "Get";
                 btn.classList.remove('uninstall-btn');
                 closeWin(`app-${appKey}`);
                 targetDockElement.style.display = 'none';
-                alert(`App Bundle "${appKey.toUpperCase()}" successfully uninstalled from system memory layer.`);
+                triggerSystemBeep(293.66, 'sine', 0.2);
+                alert(`🛑 [WIPED] App Bundle "${appKey.toUpperCase()}" cleared. ${appSize}GB returned to allocation matrix.`);
             }
         }
 
-        // Final Cut Pro Studio Simulator Code Engine
+        // Final Cut Pro Simulation Engines
         let fcpInterval = null;
         function playFcpTimeline() {
             clearInterval(fcpInterval);
@@ -849,6 +1511,7 @@
             let pct = 0;
             status.textContent = "⚡ Rendering Project Video Output Stream...";
             sub.textContent = "Processing frames at 60FPS Pro Mode.";
+            triggerSystemBeep(330, 'sine', 0.1);
             
             fcpInterval = setInterval(() => {
                 pct += 2;
@@ -857,6 +1520,7 @@
                     clearInterval(fcpInterval);
                     status.textContent = "✅ Render Sequence Complete!";
                     sub.textContent = "Video project export successfully compiled.";
+                    triggerSystemBeep(659.25, 'sine', 0.3);
                 }
             }, 80);
         }
@@ -867,7 +1531,32 @@
             document.getElementById('fcp-sub-text').textContent = "Ready to stream video render matrices...";
         }
 
-        // Interactive Bitmap Editor Matrix Init
+        // Dynamic Miraculous Movie Script Generator Engine
+        function generateMiraculousScript() {
+            const scriptBox = document.getElementById('miraculous-script-box');
+            const lines = [
+                "[Ladybug]: Cat Noir, look out! Hawk Moth activated a new reality sentimonster!",
+                "[Cat Noir]: Don't worry, My Lady, my Cataclysm is fully loaded and ready.",
+                "[Green Hehehog Entity]: *Steps out of the shadows* You two are brilliant, but the structural grid belongs to the Miraculous Boss now!",
+                "[System Prompt]: Script parsed into compilation timeline matrix perfectly. 🎬"
+            ];
+            
+            scriptBox.innerHTML = "";
+            let currentLine = 0;
+            
+            function printLine() {
+                if (currentLine < lines.length) {
+                    scriptBox.innerHTML += lines[currentLine] + "<br>";
+                    scriptBox.scrollTop = scriptBox.scrollHeight;
+                    triggerSystemBeep(440, 'sine', 0.05);
+                    currentLine++;
+                    setTimeout(printLine, 800);
+                }
+            }
+            printLine();
+        }
+
+        // Interactive Painter Engine Setup
         let activeBitmapColor = "#ef4444";
         function initBitmapCanvas() {
             const grid = document.getElementById('bitmap-canvas-element');
@@ -875,17 +1564,18 @@
             for (let i = 0; i < 256; i++) {
                 const px = document.createElement('div');
                 px.className = "bitmap-pixel";
-                px.addEventListener('mousedown', () => { px.style.backgroundColor = activeBitmapColor; });
+                px.addEventListener('mousedown', () => { px.style.backgroundColor = activeBitmapColor; triggerSystemBeep(700, 'sine', 0.02); });
                 grid.appendChild(px);
             }
         }
         function setBitmapColor(color) { activeBitmapColor = color; }
         initBitmapCanvas();
 
-        // Standard Operational Calculator Logic Engine
+        // Calculator Logic
         let calcExpression = "";
         function pressCalc(val) {
             const scr = document.getElementById('calc-display');
+            triggerSystemBeep(500, 'sine', 0.05);
             if (val === 'C') { calcExpression = ""; scr.value = "0"; }
             else if (val === '=') {
                 try {
@@ -897,6 +1587,50 @@
                 else { scr.value += val; calcExpression += val; }
             }
         }
+
+        // Simulated Live Subscriber Counter Engine 
+        let currentSubs = 952; 
+        function simulateSubsTracker() {
+            const counterEl = document.getElementById('live-subs-counter');
+            if(counterEl) {
+                if (currentSubs < 998) {
+                    currentSubs += Math.floor(Math.random() * 2) + 1;
+                }
+                counterEl.innerHTML = `<span>🎯 Core Active Subscribers: **${currentSubs}**</span><span style="font-weight: bold; color: #ff4545;">Goal: 1K</span>`;
+                
+                // Track dynamic milestone bar percentage calculation
+                const milestoneBar = document.getElementById('subs-milestone-bar');
+                if (milestoneBar) {
+                    let pct = (currentSubs / 1000) * 100;
+                    milestoneBar.style.width = `${pct}%`;
+                }
+            }
+        }
+        setInterval(simulateSubsTracker, 5000);
+
+        function applyCustomSolidWallpaper() {
+            const hex = document.getElementById('custom-wp-color-input').value;
+            document.getElementById('canvas').style.background = hex;
+        }
+
+        function applyRandomGradientWallpaper() {
+            const rColor1 = '#' + Math.floor(Math.random()*16777215).toString(16);
+            const rColor2 = '#' + Math.floor(Math.random()*16777215).toString(16);
+            document.getElementById('canvas').style.background = `linear-gradient(135deg, ${rColor1}, ${rColor2})`;
+        }
+
+        // Frame Live Clock Update Script Engine
+        function updateLiveSystemClock() {
+            const date = new Date();
+            const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
+            document.getElementById('nav-clock').textContent = date.toLocaleString('en-US', options);
+        }
+        setInterval(updateLiveSystemClock, 1000);
+        updateLiveSystemClock();
+        
+        loadVirtualFileSystem();
+        updateStoreMemoryUI();
+        simulateSubsTracker();
     </script>
 </body>
 </html>
