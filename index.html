@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>macOS Monterey Ultra Pro - TINYTACTIX Engine v9.0</title>
+    <title>macOS Monterey Ultra Pro - TINYTACTIX Engine v9.6</title>
     <style>
         :root {
             --bg-blur: blur(30px);
@@ -145,7 +145,7 @@
         .fcp-screen-content { text-align: center; color: #a1a1aa; }
         .fcp-timeline { height: 120px; background: #18181b; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
         .fcp-controls { display: flex; gap: 10px; align-items: center; }
-        .fcp-btn { background: #27272a; border: 1px solid #3f3f46; color: white; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
+        .fcp-btn { background: #27272a; border: 1px solid #3f3f46; color: white; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: 500; }
         .fcp-track { flex: 1; background: #27272a; border-radius: 4px; position: relative; overflow: hidden; height: 30px; }
         .fcp-clip { position: absolute; left: 10%; width: 60%; height: 100%; background: linear-gradient(90deg, #be185d, #ec4899); border-radius: 4px; display: flex; align-items: center; padding-left: 10px; font-weight: bold; }
         .fcp-playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: #ef4444; left: 0%; transition: left 0.1s linear; }
@@ -178,6 +178,19 @@
         .gp-light-indicator { width: 12px; height: 12px; border-radius: 50%; background: #52525b; transition: background 0.2s; }
         .gp-light-indicator.active { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 
+        /* Milestone Splash Screen Overlay */
+        .celebration-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            color: #fff; text-align: center; padding: 20px;
+        }
+        .celebration-box { background: linear-gradient(135deg, #1e1b4b, #311042); padding: 40px; border-radius: 20px; border: 2px solid #ff4545; box-shadow: 0 0 50px rgba(255,69,69,0.4); animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Tactical Blueprint Hub Module Styling */
+        .tactical-container { display: flex; flex-direction: column; height: 100%; padding: 12px; gap: 10px; }
+        .blueprint-card { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; }
+
         /* System Dock Config */
         .dock-container {
             position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
@@ -201,6 +214,9 @@
         .texture-poppy { background: linear-gradient(135deg, #ef4444, #7f1d1d); }
         .texture-roblox { background: linear-gradient(135deg, #6b7280, #111827); }
         .texture-miraculous { background: linear-gradient(135deg, #e11d48, #000000); color: white; font-weight: 900; }
+        .texture-perplexus { background: linear-gradient(135deg, #f59e0b, #10b981); }
+        .texture-english { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .texture-blueprint { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
 
         .texture-store { background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: inset 0 0 12px rgba(255,255,255,0.25); position: relative; }
         .store-blueprint-logo { width: 70%; height: 70%; position: relative; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -229,6 +245,16 @@
         <div class="lock-hint">Hint: Your active code pin number is 1234</div>
     </div>
 
+    <!-- MILESTONE CELEBRATION MODAL OVERLAY -->
+    <div class="celebration-overlay" id="celebration-screen">
+        <div class="celebration-box">
+            <h1 style="font-size: 42px; color: #eab308; margin-bottom: 10px;">🎉 1,000 SUBSCRIBERS! 🎉</h1>
+            <h3 style="font-size: 20px; color: #fff; margin-bottom: 20px;">TinyTactix Hub Milestone Accomplished</h3>
+            <p style="color: #a1a1aa; font-size: 14px; margin-bottom: 24px;">The tactical creator matrix layer is officially fully unlocked!</p>
+            <button class="fcp-btn" style="background: #22c55e; border: none; padding: 10px 24px; font-size: 14px;" onclick="closeCelebration()">Awesome!</button>
+        </div>
+    </div>
+
     <div class="desktop-canvas" id="canvas" oncontextmenu="openContextMenu(event, 'desktop')">
         
         <!-- Permanent Recycle Bin -->
@@ -247,7 +273,7 @@
             <div class="nav-group" style="gap: 12px;">
                 <div class="nav-item">📶 100%</div>
                 <div class="nav-item">🔋 99%</div>
-                <div class="nav-item" id="nav-clock">Fri Jul 10 08:31 PM</div>
+                <div class="nav-item" id="nav-clock">Mon Jul 13 1:03 PM</div>
             </div>
         </div>
 
@@ -307,7 +333,7 @@
         </div>
 
         <!-- INTERACTIVE TERMINAL APP -->
-        <div class="window" id="app-terminal" style="width: 540px; height: 400px; top: 80px; left: 200px;">
+        <div class="window" id="app-terminal" style="width: 540px; height: 440px; top: 80px; left: 200px;">
             <div class="title-bar" onmousedown="startDrag(event, 'app-terminal')">
                 <div class="window-dots">
                     <div class="dot d-close" onclick="closeWin('app-terminal')"><span>✕</span></div>
@@ -318,15 +344,15 @@
             </div>
             <div class="view-frame" style="display: flex; flex-direction: column;">
                 <div class="terminal-container" style="flex: 1;" onclick="document.getElementById('term-input').focus()">
-                    <div class="terminal-output" id="term-output">TinyTactix Operating System Core [Version 9.0]
-Type 'help' to see list of available commands. Try out the 'evofox test' hardware diagnostic!
+                    <div class="terminal-output" id="term-output">TinyTactix Operating System Core [Version 9.6]
+Type 'help' to see list of available commands. Try out the 'evofox mode' toggles!
 </div>
                     <div class="terminal-input-line">
                         <span class="terminal-prompt">tinytactix@kernel:~$&nbsp;</span>
                         <input type="text" class="terminal-input" id="term-input" autocomplete="off" autofocus onkeydown="runTerminalCommand(event)">
                     </div>
                 </div>
-                <!-- Gamepad Visual Diagnostic Sub-Panel Layout -->
+                <!-- Gamepad Visual Diagnostic Display Panel UI -->
                 <div class="gamepad-diagnostic-panel" id="gamepad-visual-monitor">
                     <div class="gp-row">
                         <span style="font-weight: bold; color: #a855f7;">🎮 EvoFox Hardware Visual Tracer</span>
@@ -334,10 +360,11 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
                     </div>
                     <div class="gp-row" style="color: #a1a1aa;">
                         <span>Device Hub: <span id="gp-model-name">Disconnected</span></span>
-                        <span>Link Rate: <span id="gp-refresh-rate">0ms</span></span>
+                        <span>Link Mode: <span id="gp-link-mode" style="color:#22c55e;">2.4G Wireless Mode</span></span>
                     </div>
                     <div class="gp-row" style="color: #6b7280; font-size: 11px;">
                         <span>Active Keys mapping: <span id="gp-buttons-pressed">None</span></span>
+                        <span>Calibration: <span id="gp-calib" style="color:#eab308;">Standard</span></span>
                     </div>
                 </div>
             </div>
@@ -422,6 +449,95 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
                         <div class="color-pick" style="background:#eab308;" onclick="setBitmapColor('#eab308')"></div>
                         <div class="color-pick" style="background:#ffffff;" onclick="setBitmapColor('#ffffff')"></div>
                         <div class="color-pick" style="background:#18181b;" onclick="setBitmapColor('#18181b')"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERPLEXUS EPIC 3D MAZE PUZZLE APP -->
+        <div class="window" id="app-perplexus" style="width: 440px; height: 380px; top: 90px; left: 380px;">
+            <div class="title-bar" onmousedown="startDrag(event, 'app-perplexus')">
+                <div class="window-dots">
+                    <div class="dot d-close" onclick="closeWin('app-perplexus')"><span>✕</span></div>
+                    <div class="dot d-min" onclick="minimizeWin('app-perplexus')"><span>−</span></div>
+                    <div class="dot d-max" onclick="maximizeWin('app-perplexus')"><span>+</span></div>
+                </div>
+                <div class="win-heading">Perplexus Gravity Puzzle</div>
+            </div>
+            <div class="view-frame" style="padding: 16px; display: flex; flex-direction: column; background: #111; gap: 12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="color:#f59e0b;">Perplexus Epic Engine</h3>
+                    <span id="perplexus-layer-tag" style="background:#10b981; padding: 2px 8px; font-size:11px; border-radius:10px;">Layer: 1 (Start)</span>
+                </div>
+                <div style="flex:1; background:#000; border: 1px dashed #333; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                    <div id="px-ball" style="width:24px; height:24px; background:radial-gradient(circle at 30% 30%, #fff, #a1a1aa); border-radius:50%; position:absolute; left:45%; top:45%; transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(255,255,255,0.2);"></div>
+                    <div id="px-track-visual" style="color: #52525b; font-size:12px; font-family:monospace; text-align:center; padding: 10px;">[Track Sector Matrix Initialized]</div>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                    <button class="fcp-btn" onclick="tiltPerplexus('up')">Tilt Up ⬆️</button>
+                    <button class="fcp-btn" onclick="tiltPerplexus('down')">Tilt Down ⬇️</button>
+                    <button class="fcp-btn" onclick="tiltPerplexus('left')">Tilt Left ⬅️</button>
+                    <button class="fcp-btn" onclick="tiltPerplexus('right')">Tilt Right ➡️</button>
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button class="fcp-btn" style="flex:1; background:#3b82f6; border:none;" onclick="shiftPerplexusLayer()">Advance Gravity Layer Gate</button>
+                    <button class="fcp-btn" style="background:#ef4444; border:none;" onclick="resetPerplexus()">Reset Ball</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ENGLISH SPEAKING LABORATORY APP -->
+        <div class="window" id="app-english" style="width: 500px; height: 380px; top: 110px; left: 190px;">
+            <div class="title-bar" onmousedown="startDrag(event, 'app-english')">
+                <div class="window-dots">
+                    <div class="dot d-close" onclick="closeWin('app-english')"><span>✕</span></div>
+                    <div class="dot d-min" onclick="minimizeWin('app-english')"><span>−</span></div>
+                    <div class="dot d-max" onclick="maximizeWin('app-english')"><span>+</span></div>
+                </div>
+                <div class="win-heading">English Speaking Lab</div>
+            </div>
+            <div class="view-frame app-split-container">
+                <div class="app-sidebar" style="width:160px;">
+                    <div class="sidebar-row active" id="eng-tab-1" onclick="switchEnglishScript(1)">👋 Introduction</div>
+                    <div class="sidebar-row" id="eng-tab-2" onclick="switchEnglishScript(2)">🎮 Gaming Review</div>
+                    <div class="sidebar-row" id="eng-tab-3" onclick="switchEnglishScript(3)">🎬 Director Speech</div>
+                    <div class="sidebar-row" id="eng-tab-4" onclick="switchEnglishScript(4)">💬 Hobby Review</div>
+                </div>
+                <div class="app-main-view" style="display:flex; flex-direction:column; gap:10px; padding:12px;">
+                    <h4 id="eng-script-title" style="color:#3b82f6;">Self-Introduction Script</h4>
+                    <div id="eng-script-box" style="flex:1; background:#1e1e1e; border:1px solid #333; border-radius:6px; padding:10px; font-size:13px; line-height:1.5; color:#e4e4e7; overflow-y:auto;">
+                        "Hello everyone! My name is Svarnit Gupta. I am nine years old and I live in Surat, Gujarat, India. Today, I want to talk about my creative engineering projects..."
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="fcp-btn" style="background:#22c55e; border:none; flex:1;" onclick="triggerSystemBeep(650, 'sine', 0.1)">Practice Accent</button>
+                        <button class="fcp-btn" style="background:#27272a; border:none;" onclick="copyEnglishScript()">Copy Text</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TACTICAL BLUEPRINT HUB WINDOW -->
+        <div class="window" id="app-blueprint" style="width: 500px; height: 380px; top: 120px; left: 250px;">
+            <div class="title-bar" onmousedown="startDrag(event, 'app-blueprint')">
+                <div class="window-dots">
+                    <div class="dot d-close" onclick="closeWin('app-blueprint')"><span>✕</span></div>
+                    <div class="dot d-min" onclick="minimizeWin('app-blueprint')"><span>−</span></div>
+                    <div class="dot d-max" onclick="maximizeWin('app-blueprint')"><span>+</span></div>
+                </div>
+                <div class="win-heading">Tactical Blueprint Hub</div>
+            </div>
+            <div class="view-frame">
+                <div class="tactical-container">
+                    <h3 style="color:#a78bfa;">Gaming Tactic Layout Matrix</h3>
+                    <div class="blueprint-card">
+                        <h4 style="color:#f43f5e; margin-bottom: 4px;">🎮 Sandbox Channel Strategy</h4>
+                        <p style="font-size: 12px; color:#d4d4d8;">Formulate target video blueprints to boost audience engagement tracking matrices.</p>
+                        <button class="fcp-btn" style="margin-top:8px; background:#a855f7; border:none;" onclick="generateTacticalBlueprint('roblox')">Generate Roblox Plan</button>
+                        <button class="fcp-btn" style="margin-top:8px; background:#ef4444; border:none;" onclick="generateTacticalBlueprint('poppy')">Generate Poppy Playtime Strategy</button>
+                    </div>
+                    <div class="blueprint-card" style="flex:1; overflow-y:auto;">
+                        <span style="font-size:11px; text-transform:uppercase; color:#8b5cf6; font-weight:bold;">Active Output Log:</span>
+                        <div id="blueprint-output-log" style="font-size: 13px; margin-top:4px; font-family:monospace; color:#38bdf8;">Select a matrix to generate content checklists...</div>
                     </div>
                 </div>
             </div>
@@ -618,18 +734,18 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
             </div>
             <div class="view-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; gap:12px;">
                 <div style="font-size:36px;">🕹️</div>
-                <h2 style="font-weight:700;">TINYTACTIX Pro OS Build v9.0</h2>
+                <h2 style="font-weight:700;">TINYTACTIX Pro OS Build v9.6</h2>
                 
                 <!-- YouTube Channel Analytics Simulator Widget -->
                 <div style="background: rgba(255,255,255,0.05); padding: 10px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); width: 100%;">
                     <div style="font-size: 11px; color: #ff4545; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">🔴 YouTube Channel Live Tracker</div>
                     <div style="font-size: 18px; font-weight: bold; color: #fff; margin: 2px 0;">TinyTactix Hub</div>
                     <div style="font-size: 12px; color: #a1a1aa; display: flex; justify-content: space-between;" id="live-subs-counter">
-                        <span>Subscribers Matrix: Loading...</span>
+                        <span>Subscribers Matrix: 1,000 Unlocked!</span>
                         <span style="font-weight: bold; color: #ff4545;">Goal: 1K</span>
                     </div>
                     <div class="memory-bar-container" style="height: 6px; margin-top: 6px;">
-                        <div class="memory-bar-fill milestone" id="subs-milestone-bar" style="width: 95%;"></div>
+                        <div class="memory-bar-fill milestone" id="subs-milestone-bar" style="width: 100%;"></div>
                     </div>
                 </div>
                 
@@ -658,6 +774,18 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
             <div class="dock-element" id="dock-trigger-app-bitmap" onclick="toggleWin('app-bitmap')">
                 <div class="dock-label">Bitmap Painter</div>
                 <div class="dock-app-tile texture-bitmap">🎨</div>
+            </div>
+            <div class="dock-element" id="dock-trigger-app-perplexus" onclick="toggleWin('app-perplexus')">
+                <div class="dock-label">Perplexus Epic</div>
+                <div class="dock-app-tile texture-perplexus">🔮</div>
+            </div>
+            <div class="dock-element" id="dock-trigger-app-english" onclick="toggleWin('app-english')">
+                <div class="dock-label">English Lab</div>
+                <div class="dock-app-tile texture-english">🗣️</div>
+            </div>
+            <div class="dock-element" id="dock-trigger-app-blueprint" onclick="toggleWin('app-blueprint')">
+                <div class="dock-label">Tactical Blueprint Hub</div>
+                <div class="dock-app-tile texture-blueprint">📐</div>
             </div>
             <div class="dock-element" id="dock-trigger-app-wallpaper" onclick="toggleWin('app-wallpaper')">
                 <div class="dock-label">Wallpapers</div>
@@ -731,6 +859,7 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
             }
         }
         function lockSystem() { document.getElementById('lock-screen').style.display = 'flex'; }
+        function closeCelebration() { document.getElementById('celebration-screen').style.display = 'none'; }
 
         // Magnification Scale Dock Engine Script
         const dock = document.getElementById('dock');
@@ -774,7 +903,7 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
                 triggerSystemBeep(349.23, 'sine', 0.08); // App launch sound
                 if(id === 'app-terminal') { 
                     document.getElementById('term-input').focus(); 
-                    if(document.getElementById('term-output').textContent.includes("Version 9.0")) {
+                    if(document.getElementById('term-output').textContent.includes("Version 9.6")) {
                         runBootSequence();
                     }
                 }
@@ -833,6 +962,18 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
             if (theme === 'cyber') canvas.style.background = 'linear-gradient(135deg, #09090b, #18181b, #27272a)';
             if (theme === 'sunset') canvas.style.background = 'linear-gradient(135deg, #f43f5e, #ca8a04, #1e1b4b)';
             if (theme === 'space') canvas.style.background = 'radial-gradient(circle, #4338ca 0%, #0f172a 70%, #020617 100%)';
+        }
+
+        function applyCustomSolidWallpaper() {
+            const color = document.getElementById('custom-wp-color-input').value;
+            document.getElementById('canvas').style.background = color;
+        }
+
+        function applyRandomGradientWallpaper() {
+            const colors = ['#1e0b36', '#0f172a', '#020617', '#ef4444', '#3b82f6', '#10b981', '#a855f7'];
+            const r1 = colors[Math.floor(Math.random() * colors.length)];
+            const r2 = colors[Math.floor(Math.random() * colors.length)];
+            document.getElementById('canvas').style.background = `linear-gradient(135deg, ${r1}, ${r2})`;
         }
 
         // Virtual File Management Framework Core
@@ -1035,6 +1176,83 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
             focusElement(win);
         }
 
+        // Interactive Perplexus Maze Core Setup Logic
+        let currentPerplexusLayer = 1;
+        let ballPosX = 45;
+        let ballPosY = 45;
+        
+        function tiltPerplexus(dir) {
+            const ball = document.getElementById('px-ball');
+            const trackText = document.getElementById('px-track-visual');
+            triggerSystemBeep(300, 'sine', 0.04);
+            
+            if(dir === 'up') ballPosY = Math.max(5, ballPosY - 8);
+            if(dir === 'down') ballPosY = Math.min(90, ballPosY + 8);
+            if(dir === 'left') ballPosX = Math.max(5, ballPosX - 8);
+            if(dir === 'right') ballPosX = Math.min(90, ballPosX + 8);
+            
+            ball.style.top = ballPosY + '%';
+            ball.style.left = ballPosX + '%';
+            
+            trackText.textContent = `[Physics Sync] Tilted ${dir.toUpperCase()} • Ball coordinates: X:${ballPosX} Y:${ballPosY}`;
+        }
+        
+        function shiftPerplexusLayer() {
+            currentPerplexusLayer++;
+            if(currentPerplexusLayer > 3) currentPerplexusLayer = 1;
+            
+            document.getElementById('perplexus-layer-tag').textContent = `Layer: ${currentPerplexusLayer} ${currentPerplexusLayer === 3 ? '(Epic Peak)' : ''}`;
+            triggerSystemBeep(700, 'sine', 0.15);
+            resetPerplexus();
+        }
+        
+        function resetPerplexus() {
+            ballPosX = 45; ballPosY = 45;
+            const ball = document.getElementById('px-ball');
+            ball.style.top = '45%'; ball.style.left = '45%';
+            document.getElementById('px-track-visual').textContent = `[Track Reset] Ball safely recalibrated to center start checkpoint.`;
+        }
+
+        // English Speaking Lab Setup Toggles
+        const englishScripts = {
+            1: { title: "Self-Introduction Script", text: `"Hello everyone! My name is Svarnit Gupta. I am nine years old and I live in Surat, Gujarat, India. Today, I want to talk about my creative engineering projects and digital building platforms..."` },
+            2: { title: "Gaming Review Practice Script", text: `"Welcome back to TinyTactix Hub! Today we are analyzing tactical gameplay dynamics, performance testing controller parameters, and exploring sandbox creators block levels. Make sure to hit subscribe!"` },
+            3: { title: "Cinematic Director Speech", text: `"Action! Welcome to the studio workspace setup for Miraculous 2: The Movie. We are designing the rendering layout tracks and preparing the trailer sequence compilation scripts today!"` },
+            4: { title: "Hobby Review Script", text: `"In my free time, I love testing advanced controller features, engineering digital layouts, solving complex three-dimensional gravity puzzle mazes like the Perplexus Epic, and creating strategic tactical layouts!"` }
+        };
+
+        function switchEnglishScript(id) {
+            document.querySelectorAll('#app-english .sidebar-row').forEach(row => row.classList.remove('active'));
+            document.getElementById(`eng-tab-${id}`).classList.add('active');
+            
+            document.getElementById('eng-script-title').textContent = englishScripts[id].title;
+            document.getElementById('eng-script-box').textContent = englishScripts[id].text;
+            triggerSystemBeep(500, 'sine', 0.05);
+        }
+
+        function copyEnglishScript() {
+            const txt = document.getElementById('eng-script-box').textContent;
+            navigator.clipboard.writeText(txt);
+            alert("Script text copied to virtual workspace clipboard matrix!");
+        }
+
+        // Tactical Blueprint Content Plan Matrix Generator
+        function generateTacticalBlueprint(gameType) {
+            const outputLog = document.getElementById('blueprint-output-log');
+            triggerSystemBeep(480, 'sine', 0.1);
+            if (gameType === 'roblox') {
+                outputLog.innerHTML = `[ROBLOX STRATEGY ENGINE INITIALIZED]<br>` +
+                                      `1. Capture high-intensity obstacle runs.<br>` +
+                                      `2. Analyze scripting custom layout blocks.<br>` +
+                                      `3. Action Item: Review subscriber server feedback.`;
+            } else if (gameType === 'poppy') {
+                outputLog.innerHTML = `[POPPY PLAYTIME ANALYSIS CONNECTED]<br>` +
+                                      `1. Stream lore breakdown maps for Chapter levels.<br>` +
+                                      `2. Track optimal puzzle pathways under time pressure.<br>` +
+                                      `3. Action Item: Export script files for the video review sequence.`;
+            }
+        }
+
         function saveActiveTextFile() {
             if (!currentlyEditingFileId) {
                 alert("No active text file open to save changes!");
@@ -1112,7 +1330,7 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
             
             inputEl.disabled = true;
             outputEl.textContent = "==================================================\n";
-            outputEl.textContent += "        TINYTACTIX OS v9.0 - BOOT SEQUENCE        \n";
+            outputEl.textContent += "        TINYTACTIX OS v9.6 - BOOT SEQUENCE        \n";
             outputEl.textContent += "==================================================\n";
             
             const timeline = [
@@ -1206,13 +1424,11 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
             
             const led = document.getElementById('gp-led-status');
             const nameModel = document.getElementById('gp-model-name');
-            const refresh = document.getElementById('gp-refresh-rate');
             const btnKeys = document.getElementById('gp-buttons-pressed');
 
             if (activeGP) {
                 led.classList.add('active');
                 nameModel.textContent = activeGP.id.substring(0, 22) + "...";
-                refresh.textContent = "4ms (Ultra)";
                 
                 let keysPressed = [];
                 activeGP.buttons.forEach((btn, idx) => {
@@ -1222,7 +1438,6 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
             } else {
                 led.classList.remove('active');
                 nameModel.textContent = "Disconnected";
-                refresh.textContent = "0ms";
                 btnKeys.textContent = "None";
             }
             requestAnimationFrame(runGamepadLiveTracerLoop);
@@ -1230,6 +1445,9 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
         requestAnimationFrame(runGamepadLiveTracerLoop);
 
         // Terminal Prompt Console Processing Engine
+        let gpMode = "2.4G Wireless Mode";
+        let gpCalib = "Standard";
+
         function runTerminalCommand(event) {
             if (event.key !== 'Enter') return;
             const inputEl = document.getElementById('term-input');
@@ -1259,7 +1477,9 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
                                              `  rm [name]    - Move specified architecture node to Trash.\n` +
                                              `  date         - Fetch current local framework time stamp.\n` +
                                              `  lock         - Exit runtime execution layer back to Lock Screen.\n` +
-                                             `  evofox test  - Run Live Gamepad Core Matrix Vector Diagnostic Check.\n` +
+                                             `  evofox test  - Run Live Gamepad Check (EvoFox One S hardware profile).\n` +
+                                             `  evofox mode  - Toggle hardware layout link (Android HID / 2.4G Wireless).\n` +
+                                             `  evofox calibrate - Recalibrate deadzones to full precision vector.\n` +
                                              `  tinytactix   - Display developer engine vector signature.\n`;
                     break;
                 case 'clear':
@@ -1273,17 +1493,28 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
                         outputEl.textContent += `--- Live Gamepad Core Matrix Analyzer ---\n`;
                         if (activeGP) {
                             outputEl.textContent += `[SUCCESS] Controller Connected: ${activeGP.id}\n` +
-                                                     `[Status]: LED Indicator Matrix Active | Performance: 100% Operational.\n`;
+                                                     `[Active Mode]: ${gpMode} | Calibration: ${gpCalib}\n`;
                             triggerSystemBeep(600, 'sine', 0.15);
                         } else {
-                            outputEl.textContent += `[WARNING] No gamepad detected in hardware node layer.\n` +
-                                                     `[Action Required]: Wake up your EvoFox One S controller by clicking any key, then re-run 'evofox test'.\n`;
-                            triggerSystemBeep(250, 'triangle', 0.25);
+                            outputEl.textContent += `[WARNING] No physical USB gamepad detected in hardware node layer.\n` +
+                                                     `[Status]: Simulating virtual parameters for EvoFox One S via ${gpMode}.\n`;
+                            triggerSystemBeep(250, 'triangle', 0.15);
                         }
+                    } else if (parts[1] === 'mode') {
+                        gpMode = (gpMode === "2.4G Wireless Mode") ? "Android HID Mode" : "2.4G Wireless Mode";
+                        document.getElementById('gp-link-mode').textContent = gpMode;
+                        document.getElementById('gp-link-mode').style.color = (gpMode.includes("2.4G")) ? "#22c55e" : "#3b82f6";
+                        outputEl.textContent += `[MODES] EvoFox hardware layout alignment toggled directly to: ${gpMode}\n`;
+                        triggerSystemBeep(440, 'sine', 0.1);
+                    } else if (parts[1] === 'calibrate') {
+                        gpCalib = "100% Precision Unlocked";
+                        document.getElementById('gp-calib').textContent = gpCalib;
+                        document.getElementById('gp-calib').style.color = "#22c55e";
+                        outputEl.textContent += `[SUCCESS] Deadzones and axis maps fully balanced and calibrated successfully!\n`;
+                        triggerSystemBeep(587, 'sine', 0.2);
                     } else {
                         outputEl.textContent += `--- EvoFox One S Wireless Controller Diagnostic ---\n` +
-                                                 `[Status]: Pipeline Connected via 2.4G USB Matrix Node\n` +
-                                                 `[Mode Hint]: Type 'evofox test' to perform a real-time connection scan!\n`;
+                                                 `Type 'evofox test', 'evofox mode', or 'evofox calibrate' for registry inputs.\n`;
                     }
                     break;
                 case 'ls':
@@ -1349,7 +1580,7 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
                 case 'tinytactix':
                     outputEl.textContent += `=========================================\n` +
                                              `   TINYTACTIX GAMING OS ENGINE PLATFORM\n` +
-                                             `   Building Vector Matrix Architecture v9.0\n` +
+                                             `   Building Vector Matrix Architecture v9.6\n` +
                                              `=========================================\n`;
                     break;
                 default:
@@ -1537,7 +1768,7 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
             const lines = [
                 "[Ladybug]: Cat Noir, look out! Hawk Moth activated a new reality sentimonster!",
                 "[Cat Noir]: Don't worry, My Lady, my Cataclysm is fully loaded and ready.",
-                "[Green Hehehog Entity]: *Steps out of the shadows* You two are brilliant, but the structural grid belongs to the Miraculous Boss now!",
+                "[Green Hehehog Entity]: *Steps out of the shadows as a realistic human entity* You two are brilliant, but the structural grid belongs to the Miraculous Boss now!",
                 "[System Prompt]: Script parsed into compilation timeline matrix perfectly. 🎬"
             ];
             
@@ -1580,57 +1811,35 @@ Type 'help' to see list of available commands. Try out the 'evofox test' hardwar
             else if (val === '=') {
                 try {
                     let res = eval(calcExpression);
-                    scr.value = res; calcExpression = res.toString();
-                } catch { scr.value = "Error"; calcExpression = ""; }
-            } else {
-                if (scr.value === "0" && !isNaN(val)) { scr.value = val; calcExpression = val; }
-                else { scr.value += val; calcExpression += val; }
+                    scr.value = res; calcExpression = String(res);
+                } catch(e) { scr.value = "Error"; calcExpression = ""; }
+            }
+            else if (val === '+/-') {
+                if(calcExpression) {
+                    calcExpression = String(-1 * eval(calcExpression));
+                    scr.value = calcExpression;
+                }
+            }
+            else if (val === '%') {
+                if(calcExpression) {
+                    calcExpression = String(eval(calcExpression) / 100);
+                    scr.value = calcExpression;
+                }
+            }
+            else {
+                if (scr.value === "0" && !isNaN(val)) { calcExpression = val; } 
+                else { calcExpression += val; }
+                scr.value = calcExpression;
             }
         }
 
-        // Simulated Live Subscriber Counter Engine 
-        let currentSubs = 952; 
-        function simulateSubsTracker() {
-            const counterEl = document.getElementById('live-subs-counter');
-            if(counterEl) {
-                if (currentSubs < 998) {
-                    currentSubs += Math.floor(Math.random() * 2) + 1;
-                }
-                counterEl.innerHTML = `<span>🎯 Core Active Subscribers: **${currentSubs}**</span><span style="font-weight: bold; color: #ff4545;">Goal: 1K</span>`;
-                
-                // Track dynamic milestone bar percentage calculation
-                const milestoneBar = document.getElementById('subs-milestone-bar');
-                if (milestoneBar) {
-                    let pct = (currentSubs / 1000) * 100;
-                    milestoneBar.style.width = `${pct}%`;
-                }
-            }
+        // System Initialization
+        window.onload = function() {
+            loadVirtualFileSystem();
+            updateStoreMemoryUI();
+            // Optional: Trigger 1K Subscribers celebration overlay pop up automatically
+            setTimeout(() => { document.getElementById('celebration-screen').style.display = 'flex'; triggerSystemBeep(880, 'sine', 0.4); }, 2000);
         }
-        setInterval(simulateSubsTracker, 5000);
-
-        function applyCustomSolidWallpaper() {
-            const hex = document.getElementById('custom-wp-color-input').value;
-            document.getElementById('canvas').style.background = hex;
-        }
-
-        function applyRandomGradientWallpaper() {
-            const rColor1 = '#' + Math.floor(Math.random()*16777215).toString(16);
-            const rColor2 = '#' + Math.floor(Math.random()*16777215).toString(16);
-            document.getElementById('canvas').style.background = `linear-gradient(135deg, ${rColor1}, ${rColor2})`;
-        }
-
-        // Frame Live Clock Update Script Engine
-        function updateLiveSystemClock() {
-            const date = new Date();
-            const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
-            document.getElementById('nav-clock').textContent = date.toLocaleString('en-US', options);
-        }
-        setInterval(updateLiveSystemClock, 1000);
-        updateLiveSystemClock();
-        
-        loadVirtualFileSystem();
-        updateStoreMemoryUI();
-        simulateSubsTracker();
     </script>
 </body>
 </html>
